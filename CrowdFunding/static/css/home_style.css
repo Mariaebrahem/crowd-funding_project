@@ -1,0 +1,31 @@
+body {}
+
+.search-select {
+    max-width: 150px;
+}
+
+#about {
+    margin-left: 300px;
+    margin-right: 300px;
+}
+
+.custom-center {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.category-card {
+    background-color: #f0f4f8;
+    /* خلفية فاتحة */
+    border-radius: 10px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    background-color: #e3ecf5;
+    /* لون أغمق عند الـ hover */
+}

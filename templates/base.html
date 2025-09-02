@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% block title %}
+        {% endblock title %}
+    </title>
+    {% block headScripts %}{% endblock headScripts %}
+    {% block styles %}{% endblock styles %}
+</head>
+
+<body>
+    {% include "partials/nav2.html" %}
+    {% block content %} {% endblock content %}
+    {% block scripts %}{% endblock scripts %}
+    <script src="{% static 'fontawesome/js/all.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+
+</html>

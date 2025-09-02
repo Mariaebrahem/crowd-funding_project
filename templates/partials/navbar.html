@@ -1,0 +1,54 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+        <!-- اللوجو -->
+        <a class="navbar-brand" href="#" style="color: blue;font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;">CrowdFunding</a>
+
+        <!-- زرار القائمة في الموبايل -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <!-- محتوى الناف بار -->
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+            <!-- اللينكات (شمال) -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Profile</a>
+                </li>
+                <!-- <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        aria-expanded="false">
+                        Dropdown
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li> -->
+            </ul>
+
+            <!-- السيرش في النص -->
+            <form class="d-flex mx-auto" role="search"  style="max-width: 800px;">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" style="width: 400px;"/>
+                <button class="btn btn-primary me-2" type="submit">Search</button>
+            </form>
+
+            <!-- login & register (يمين) -->
+            <div class="d-flex ms-3">
+<a href="{% url 'login' %}" class="btn btn-outline-primary me-2">Login</a>
+<a href="{% url 'register' %}" class="btn btn-primary me-2">Register</a>
+            </div>
+<!-- btn btn-danger -->
+<!-- btn btn-outline-success -->
+        </div>
+    </div>
+</nav> 
