@@ -16,6 +16,8 @@ from projects.models import (
     ProjectImage,
     Rating,
 )
+
+
 from projects.forms import (
     ProjectForm,
     CommentForm,
