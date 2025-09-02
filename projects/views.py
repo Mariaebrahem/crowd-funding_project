@@ -6,18 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.utils import timezone
 from django.db import transaction
 from django.db.models import Prefetch, Avg
-from projects.models import (
-    Project,
-    Category,
-    Comment,
-    Donation,
-    ReportProject,
-    ReportComment,
-    ProjectImage,
-    Rating,
-)
-
-
+from projects.models import Project, Category, Comment, ProjectImage, Rating
 from projects.forms import (
     ProjectForm,
     CommentForm,
@@ -32,7 +21,9 @@ class HomePageView(TemplateView):
 
     def get_homepage_data(self):
         images_prefetch = Prefetch(
-            "images", queryset=ProjectImage.objects.order_by("id"), to_attr="ordered_images"
+            "images",
+            queryset=ProjectImage.objects.order_by("id"),
+            to_attr="ordered_images",
         )
 
         top_rated_projects = Project.objects.prefetch_related(images_prefetch).order_by(
