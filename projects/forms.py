@@ -1,5 +1,6 @@
 from django import forms
-from .models import Project, Comment, Donation, ReportProject, ReportComment
+from .models import Project, Comment, Donation, ReportProject, ReportComment, ProjectImage
+from django.forms import inlineformset_factory
 
 class ProjectForm(forms.ModelForm):
     class Meta:
