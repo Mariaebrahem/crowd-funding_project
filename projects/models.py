@@ -38,9 +38,15 @@ class Project(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="projects", blank=False, null=False
     )
-    total = models.DecimalField(
-        max_digits=10, decimal_places=2, blank=False, null=False
-    )
+    # total_donations = models.DecimalField(
+    #     max_digits=10, decimal_places=2, default=Decimal("0.00")
+    # )
+
+    @property
+    def total_donations(self):
+         return sum(d.amount for d in self.donations.all())
+
+    cap = models.DecimalField(max_digits=10, decimal_places=2)
     tags = models.ManyToManyField(Tag, related_name="projects", blank=True)
     start_time = models.DateField(blank=False, null=False)
     end_time = models.DateField(null=True, blank=True)
@@ -62,23 +68,14 @@ class Project(models.Model):
 
     @property
     def progress_percentage(self):
-        if self.total and self.total > 0 and self.current_donation:
-            return (self.current_donation / self.total) * 100
-        return 0
-
-    @property
-    def average_rating(self):
-        reviews = self.ratings.aggregate(average=Avg("rating"))
-        return float(reviews["average"]) if reviews["average"] else 0
+          if self.cap > 0:
+              return (self.total_donations / self.cap) * 100
+          return 0
 
     @property
     def rating_count(self):
         reviews = self.ratings.aggregate(count=Count("id"))
         return reviews["count"] or 0
-
-    @property
-    def comments(self):
-        return self.comment_set.exclude(comment__isnull=True)
 
     @property
     def is_active(self):
@@ -116,7 +113,7 @@ class Rating(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="ratings"
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="ratings")
     rating = models.FloatField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -128,11 +125,11 @@ class Comment(models.Model):
     project = models.ForeignKey(
         Project, on_delete=models.CASCADE, related_name="comments"
     )
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="comments")
     comment = models.TextField(null=True)
     parent = models.ForeignKey(
         "self", null=True, blank=True, on_delete=models.CASCADE, related_name="replies"
-    )  # Added for replies
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -168,15 +165,27 @@ class ReportProject(models.Model):
         return f"Project Report on '{self.project.title}' by {self.reporter.username}"
 
 
+
+
 class ReportComment(models.Model):
-    reporter = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="reported_comments"
-    )
-    comment = models.ForeignKey(
-        Comment, on_delete=models.CASCADE, related_name="comment_reports"
-    )
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="comment_reports")
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reported_comments")  # ✅ أضف السطر دا
     reason = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"Comment Report by {self.reporter.username}"
+
+    comment = models.ForeignKey(
+        Comment, on_delete=models.CASCADE, related_name="comment_reports"
+    )
+    reporter = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reported_comments"
+    )
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment Report on comment #{self.comment.id} by {self.reporter.username}"
+
+
