@@ -3,10 +3,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from projects.views import HomePageView
+from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
+from projects.views import HomePageView
 
 urlpatterns = [
-    path('users/', include('django.contrib.auth.urls')),
     path("admin/", admin.site.urls),
+    path("oauth/", include("allauth.urls")),
+    path("accounts/", include("accounts.urls")),
     path("", HomePageView.as_view(), name="landing"),
     path("projects/", include("projects.urls")),
 ]

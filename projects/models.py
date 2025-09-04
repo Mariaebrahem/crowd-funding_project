@@ -68,7 +68,7 @@ class Project(models.Model):
 
     @property
     def progress_percentage(self):
-          if self.cap > 0:
+          if self.cap and self.cap > 0:
               return (self.total_donations / self.cap) * 100
           return 0
 
