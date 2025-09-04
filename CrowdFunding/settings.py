@@ -37,29 +37,28 @@ DEBUG = env.bool("DEBUG")
 
 AUTH_USER_MODEL = "accounts.Account"
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost','e55081e320d4.ngrok-free.app']
+ALLOWED_HOSTS = ["127.0.0.1", "localhost", "e55081e320d4.ngrok-free.app"]
 
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Emailing settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = env.str('EMAIL_HOST')
-EMAIL_FROM = env.str('EMAIL_FROM')
-EMAIL_HOST_USER = env.str('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = env.str('EMAIL_HOST_PASSWORD')
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = env.str("EMAIL_HOST")
+EMAIL_FROM = env.str("EMAIL_FROM")
+EMAIL_HOST_USER = env.str("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env.str("EMAIL_HOST_PASSWORD")
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 
+SITE_ID = 1
 
-SITE_ID = 1 
-
-PASSWORD_RESET_TIMEOUT = 86400 # 24 hours in seconds
+PASSWORD_RESET_TIMEOUT = 86400  # 24 hours in seconds
 # Application definition
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
-    'django.contrib.sites',
+    "django.contrib.sites",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
@@ -77,7 +76,7 @@ INSTALLED_APPS = [
 ]
 
 SITE_ID = 1
-ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = "https"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -88,11 +87,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "allauth.account.middleware.AccountMiddleware",
-    
 ]
 
 ROOT_URLCONF = "CrowdFunding.urls"
-import os
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -109,91 +107,72 @@ TEMPLATES = [
     },
 ]
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
-]
+STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 
 SOCIALACCOUNT_PROVIDERS = {
-
-    'google': {
-
-        'APP': {
-
-            'client_id': env.str("GOOGLE_APP_ID"),
-
-            'secret': env.str("GOOGLE_APP_SECRET"),
-
-            'key': ''
-
+    "google": {
+        "APP": {
+            "client_id": env.str("GOOGLE_APP_ID"),
+            "secret": env.str("GOOGLE_APP_SECRET"),
+            "key": "",
         },
-
-        'SCOPE': [
-
-            'profile',
-
-            'email',
-
+        "SCOPE": [
+            "profile",
+            "email",
         ],
-
-        'AUTH_PARAMS': {
-
-            'access_type': 'online',
-
-        }
-
-    }
-    ,
-    'facebook': {
-        'METHOD': 'oauth2',
-        'SDK_URL': '//connect.facebook.net/{locale}/sdk.js',
-        'SCOPE': ['email', 'public_profile'],
-        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-        'INIT_PARAMS': {'cookie': True},
-        'FIELDS': [
-            'id',
-            'email',
-            'name',
-            'first_name',
-            'last_name',
-            'gender',
+        "AUTH_PARAMS": {
+            "access_type": "online",
+        },
+    },
+    "facebook": {
+        "METHOD": "oauth2",
+        "SDK_URL": "//connect.facebook.net/{locale}/sdk.js",
+        "SCOPE": ["email", "public_profile"],
+        "AUTH_PARAMS": {"auth_type": "reauthenticate"},
+        "INIT_PARAMS": {"cookie": True},
+        "FIELDS": [
+            "id",
+            "email",
+            "name",
+            "first_name",
+            "last_name",
+            "gender",
         ],
-        'EXCHANGE_TOKEN': True,
-        'VERIFIED_EMAIL': False,
-        'VERSION': 'v23.0',
-        'APP': {
-            'client_id': env.str('FACEBOOK_APP_ID'),
-            'secret': env.str('FACEBOOK_APP_SECRET'),
-        }
-    }
+        "EXCHANGE_TOKEN": True,
+        "VERIFIED_EMAIL": False,
+        "VERSION": "v23.0",
+        "APP": {
+            "client_id": env.str("FACEBOOK_APP_ID"),
+            "secret": env.str("FACEBOOK_APP_SECRET"),
+        },
+    },
 }
 
+SOCIALACCOUNT_LOGIN_ON_GET = True
+
+ACCOUNT_ADAPTER = "accounts.adapter.MyAccountAdapter"
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
-SOCIALACCOUNT_LOGIN_ON_GET=True
-ACCOUNT_LOGIN_REDIRECT_URL = '/'
-ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'
-ACCOUNT_LOGOUT_ON_GET=True
+ACCOUNT_LOGIN_REDIRECT_URL = "/"
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = "/"
+ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_LOGOUT_REDIRECT_URL = "/accounts/login/"
-
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
-
-# ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
-
-ACCOUNT_FORMS = {'signup': 'accounts.forms.SignupForm'}
-ACCOUNT_SIGNUP_FIELDS = ["first_name","last_name","email*","password1","password2","phone_number","profile_picture"]
-
-# project/settings.py:
-ACCOUNT_ADAPTER = 'accounts.adapter.MyAccountAdapter'
-
+ACCOUNT_FORMS = {"signup": "accounts.forms.SignupForm"}
+ACCOUNT_SIGNUP_FIELDS = [
+    "first_name",
+    "last_name",
+    "email*",
+    "password1",
+    "password2",
+    "phone_number",
+    "profile_picture",
+]
 
 WSGI_APPLICATION = "CrowdFunding.wsgi.application"
-
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -201,10 +180,6 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -251,7 +226,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "CrowdFunding", "static")]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-
-
-# Add these missing settings
-DEFAULT_FROM_EMAIL = env.str('EMAIL_FROM')  # Required for emails to work
+DEFAULT_FROM_EMAIL = env.str("EMAIL_FROM")

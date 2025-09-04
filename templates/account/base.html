@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'fontawesome/css/all.min.css' %}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="{% static 'js/jquery-3.7.1.js' %}"></script>
+    <title>
+        {% block title %}
+        {% endblock title %}
+    </title>
+    {% block headScripts %}{% endblock headScripts %}
+    {% block styles %}{% endblock styles %}
+</head>
+
+<body>
+    <div class="container" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100svh;">
+        <div style="width: 100%;">
+            {% block content %} {% endblock content %}
+        </div>
+    </div>
+    {% block scripts %}{% endblock scripts %}
+    <script src="{% static 'fontawesome/js/all.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+
+</html>

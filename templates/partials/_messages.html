@@ -1,0 +1,19 @@
+{% if messages %}
+<div class="my-3" style="display: flex; flex-direction: column; margin-inline: auto; gap: 0.5rem;">
+    {% for message in messages %}
+    {% if message.level_tag == 'warning' %}
+    <div class="alert alert-danger my-0" role="alert">
+        {{ message }}
+    </div>
+    {% elif message.level_tag == 'warning' %}
+    <div class="alert alert-warning my-0" role="alert">
+        {{ message }}
+    </div>
+    {% else %}
+    <div class="alert alert-success my-0" role="alert">
+        {{ message }}
+    </div>
+    {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
