@@ -4,7 +4,33 @@ from .models import Project, Comment, Donation, ReportProject, ReportComment
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project
-        fields = ['title', 'details', 'category', 'tags', 'total', 'start_time', 'end_time']
+        fields = [
+            "title",
+            "details",
+            "category",
+            "tags",
+            "cap",
+            "start_time",
+            "end_time",
+        ]
+
+
+class ProjectImageForm(forms.ModelForm):
+    class Meta:
+        model = ProjectImage
+        fields = ["image"]
+
+
+ProjectImageFormSet = inlineformset_factory(
+    Project,
+    ProjectImage,
+    form=ProjectImageForm,
+    can_order=True,
+    min_num=1,
+    max_num=5,
+    can_delete=True,
+)
+
 
 class CommentForm(forms.ModelForm):
     class Meta:

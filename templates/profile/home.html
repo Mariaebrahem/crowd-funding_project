@@ -20,24 +20,24 @@
                 <p class="lead">Be a part of something <span class="fw-bold">Extraordinary!!</span></p>
 
                 <!-- Search bar -->
-                <form method="GET" action="#" class="d-flex mt-4">
+                <div class="d-flex mt-4">
                     <div class="input-group">
                         <!-- Dropdown -->
-                        <select class="form-select rounded-start-pill search-select">
-                            <option value="project">Project</option>
-                            <option value="category">Category</option>
-                            <option value="tag">Tag</option>
+                        <select id="search-method" class="form-select rounded-start-pill search-select">
+                            <option value="search_titles">Project</option>
+                            <option value="search_categories">Category</option>
+                            <option value="search_tags">Tag</option>
                         </select>
                         <!-- Input -->
-                        <input type="text" class="form-control" placeholder="search for a project">
+                        <input id="search-input" type="text" class="form-control" placeholder="search for a project">
                         <!-- Button -->
-                        <button class="btn btn-danger rounded-end-pill" type="submit">
+                        <button class="btn btn-danger rounded-end-pill" id="search-btn">
                             <img src="{% static 'imgs/magnifiying-glass_93642.png' %}" alt="" width="20px"
                                 height="20px">
                             <i class="bi bi-search"></i>
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
             <!-- الصورة -->
             <div class="col-md-6 text-center">
@@ -136,4 +136,25 @@
 
 
 {% block scripts %}
+ <script>
+        $(document).ready(function () {
+            $('#search-btn').click(function () {
+                const searchBy = $('#search-method').val().trim()
+                const query = $('#search-input').val().trim();
+                
+                const anchor = document.createElement("a")
+
+                if (query !== '') {
+                    anchor.href = `{% url 'projects' %}?${searchBy}=${encodeURIComponent(query)}`;
+                    anchor.click();
+                }
+            });
+
+            $('#search-input').on('keypress', function (e) {
+                if (e.which === 13) {
+                    $('#search-btn').click();
+                }
+            });
+        });
+    </script>
 {% endblock scripts%}
