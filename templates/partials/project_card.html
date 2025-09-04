@@ -1,0 +1,81 @@
+{% load static %}
+<!-- <div class="card" style="width: 18rem;">
+    <img src="{% static 'imgs\WhatsApp Image 2025-08-13 at 22.42.30_ee7e4ef1.jpg' %}" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s
+            content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+</div> -->
+<!-- <div class="card" style="width: 18rem;">
+    <img src="{% static 'imgs\GOONJ- Little Needs _ Advertising campaign_ - Unmesh Nayak.jpeg' %}" class="card-img-top"
+        alt="...">
+    <div class="card-body text-center">
+        <h5 class="card-title">KARYME'S FUND FOR TEEN CANCER AMERICA</h5>
+        <p class="card-text mb-1">
+            Rating
+            <span class="text-warning">★</span>
+            <span class="text-warning">★</span>
+            <span class="text-warning">★</span>
+            <span class="text-secondary">☆</span>
+            <span class="text-secondary">☆</span>
+        </p>
+        <a href="#" class="btn btn-secondary">View details</a>
+    </div>
+</div> -->
+
+<!-- <div class="card" style="width: 18rem;">
+    <img src="..." class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s
+            content.</p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+</div> -->
+
+
+<!-- <div class="row row-cols-1 row-cols-md-4 g-4">
+    {% for project in projects %}
+    <div class="col">
+        <div class="card h-100 shadow-sm">
+            <img src="{{ project.image.url }}" class="card-img-top" alt="{{ project.title }}">
+            <div class="card-body">
+                <h5 class="card-title">{{ project.title }}</h5>
+                <p class="card-text">
+                    Rating:
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= project.rating %} ⭐ {% else %} ☆ {% endif %} {% endfor %} </p>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{% url 'project_detail' project.id %}" class="btn btn-primary">View details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center">No projects available.</p>
+    {% endfor %}
+</div> -->
+
+
+<div class="card" style="width: 18rem;">
+    <img src="https://via.placeholder.com/286x180" class="card-img-top" alt="...">
+    <div class="card-body">
+        <h5 class="card-title">Card title</h5>
+
+        <!-- Rating -->
+        <div class="mb-2 text-warning">
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa fa-star"></i>
+            <i class="fa-regular fa-star"></i> <!-- نجمة فاضية -->
+        </div>
+
+        <p class="card-text">
+            Some quick example text to build on the card title and make up the bulk of the card’s content.
+        </p>
+        <a href="#" class="btn btn-primary">Go somewhere</a>
+    </div>
+</div>

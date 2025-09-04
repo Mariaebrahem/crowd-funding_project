@@ -1,0 +1,44 @@
+<h3>Top rated projects</h3>
+<ol>
+  {% for pr in top_rated_projects %}
+  <li id="project-{{ pr.id }}">
+    <div>{{ pr.title }}</div>
+    {% if pr.ordered_images %}
+      <img src="{{ pr.ordered_images.0.file.url }}" alt="{{ pr.title }}" style="width: 50px; height: 50px;"/>
+    {% endif %}
+  </li>
+  {% endfor %}
+</ol>
+
+<h3>Latest projects</h3>
+<ol>
+  {% for pr in latest_projects %}
+  <li id="project-{{ pr.id }}">
+    <div>{{ pr.title }}</div>
+    {% if pr.ordered_images|length > 2 %}
+      <img src="{{ pr.ordered_images.2.file.url }}" alt="{{ pr.title }}" style="width: 50px; height: 50px;"/>
+    {% endif %}
+
+  </li>
+  {% endfor %}
+</ol>
+
+<h3>Featured projects</h3>
+<ol>
+  {% for pr in featured_projects %}
+  <li id="project-{{ pr.id }}">
+    <div>{{ pr.title }}</div>
+    {% if pr.ordered_images|length > 3 %}
+      <img src="{{ pr.ordered_images.3.file.url }}" alt="{{ pr.title }}" style="width: 50px; height: 50px;"/>
+    {% endif %}
+    
+  </li>
+  {% endfor %}
+</ol>
+
+<h3>Categories</h3>
+<ol>
+  {% for cat in categories %}
+  <li>{{ cat.name }}</li>
+  {% endfor %}
+</ol>

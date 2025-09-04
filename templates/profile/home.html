@@ -1,0 +1,139 @@
+{% extends 'base.html' %}
+{% load static%}
+{% block title %}Home page{% endblock title %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/home_style.css'%}">
+{% endblock styles %}
+
+
+{% block content %}
+
+<div class="mx-5">
+    <!-- search section -->
+    <section class="container my-5">
+        <div class="row align-items-center">
+            <!-- النصوص -->
+            <div class="col-md-6">
+                <h1 class="fw-bold display-5">FROM VISION <br> TO REALITY</h1>
+                <br>
+                <p class="lead">Be a part of something <span class="fw-bold">Extraordinary!!</span></p>
+
+                <!-- Search bar -->
+                <form method="GET" action="#" class="d-flex mt-4">
+                    <div class="input-group">
+                        <!-- Dropdown -->
+                        <select class="form-select rounded-start-pill search-select">
+                            <option value="project">Project</option>
+                            <option value="category">Category</option>
+                            <option value="tag">Tag</option>
+                        </select>
+                        <!-- Input -->
+                        <input type="text" class="form-control" placeholder="search for a project">
+                        <!-- Button -->
+                        <button class="btn btn-danger rounded-end-pill" type="submit">
+                            <img src="{% static 'imgs/magnifiying-glass_93642.png' %}" alt="" width="20px"
+                                height="20px">
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+            <!-- الصورة -->
+            <div class="col-md-6 text-center">
+                <img src="{% static 'imgs/Ajuda humanitária em doações e assistência a cães _ Vetor Premium.jpeg' %}"
+                    alt="Hero Image" class="img-fluid" height="500px" width="500px">
+            </div>
+        </div>
+    </section>
+    <!-- about section -->
+    <section class="custom-center my-5" id="about">
+        <div>
+            <h3 class="text-center mb-4">
+                <span class="fw-bold">About</span> us
+            </h3>
+        </div>
+        <div>
+            <p class="lead text-center">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem,
+                veritatis a aut pariatur qui tempora ullam aliquid odio excepturi? Nulla, aliquam. Aperiam est et odio
+                dolore quae ex iure tempore. Lorem ipsum dolor sit amet consectetur adipisicing elit. Ad illo adipisci,
+                ut
+                aut iusto sit eligendi recusandae debitis ratione porro. Cum reprehenderit nulla iure incidunt non
+                laborum
+                ut est veroggggggggggggggggggggggggggggggggggggg.</p>
+        </div>
+    </section>
+</div>
+
+<h3 class="text-center my-4 mx-auto fw-semibold">TOP RATED PROJECTS</h3>
+<div id="topRatedProjectsCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        {% for pr in top_rated_projects %}
+        <button type="button" data-bs-target="#topRatedProjectsCarousel" data-bs-slide-to="{{forloop.counter0}}"
+            class="{% if forloop.counter0 == 0 %}active{% endif %}" aria-current="true"
+            aria-label="{{pr.title}}"></button>
+        {% endfor %}
+    </div>
+    <div class="carousel-inner">
+        {% for pr in top_rated_projects %}
+        {{forloop.counter}}
+        <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
+            <img src="{{ pr.ordered_images.0.image.url }}" class="d-block w-100 h-300" style="max-height: 500px;"
+                alt="{{ pr.title }}">
+            <div class="carousel-caption d-none d-md-block">
+                <h5>{{ pr.title }}</h5>
+                <p>{{ pr.details }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="mx-5">
+    <section id="xx" class="carousel slide w-50 mx-auto custom-center mt-4 mb-2">
+        <div>
+
+            <h3 class="text-center mb-4">
+                <span class="fw-bold">Featured</span> projects
+            </h3>
+        </div>
+
+    </section>
+
+
+
+
+
+    <!-- Latest-Created prpjects section -->
+    <section class="custom-center">
+        <div>
+            <!-- <p class="lead"><span class="fw-bold">Latest-Created</span> projects</p> -->
+            <h3 class="text-center mb-4">
+                <span class="fw-bold">Latest-Created</span> projects
+            </h3>
+        </div>
+        <div class="container my-5">
+
+        </div>
+    </section>
+
+
+
+    <h3 class="text-center mt-4 mb-2 fw-semibold">CATEGORIES</h3>
+    <div class="row g-4 justify-content-center">
+        <!-- Card -->
+        {% for cat in categories %}
+        <div class="col-md-4 col-lg-3">
+            <div class="card text-center p-4 shadow-sm category-card">
+                <h5 class="fw-semibold">{{cat.name}}</h5>
+                <p class="mb-0">1 Projects</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock content%}
+
+
+{% block scripts %}
+{% endblock scripts%}
