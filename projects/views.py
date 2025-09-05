@@ -32,9 +32,7 @@ class HomePageView(TemplateView):
 
     def get_homepage_data(self):
         images_prefetch = models.Prefetch(
-            "images",
-            queryset=ProjectImage.objects.order_by("id"),
-            to_attr="ordered_images",
+            "images", queryset=ProjectImage.objects.order_by("id")
         )
 
         top_rated_projects = Project.objects.prefetch_related(images_prefetch).order_by(
@@ -48,7 +46,9 @@ class HomePageView(TemplateView):
             .filter(is_featured=True)
             .order_by("-created_at")[:5]
         )
-        categories = Category.objects.all()
+        categories = Category.objects.all().annotate(
+            projects_count=models.Count("projects")
+        )
 
         return {
             "top_rated_projects": top_rated_projects,
@@ -319,6 +319,9 @@ class CategoryDetailView(DetailView):
     model = Category
     template_name = "projects/category_detail.html"
     context_object_name = "obj"
+
+    def get_queryset(self):
+        return Category.objects.all().annotate(projects_count=models.Count("projects"))
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

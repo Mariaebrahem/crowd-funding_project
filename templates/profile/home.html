@@ -4,7 +4,20 @@
 
 {% block styles %}
 <link rel="stylesheet" href="{% static 'css/home_style.css'%}">
-<link rel="stylesheet" href="{% static 'css/card_style.css' %}">
+<link rel="stylesheet" href="{% static 'css/card_style.css' %}">\
+
+<style>
+    .custom-background-shadow {
+        background: rgba(0, 0, 0, 0.3);
+        transition: background 0.3s ease, backdrop-filter 0.3s ease;
+    }
+
+    .custom-background-shadow:hover {
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+    }
+</style>
+
 {% endblock styles %}
 
 
@@ -54,8 +67,8 @@
             {% for pr in top_rated_projects %}
             {{forloop.counter}}
             <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
-                <img src="{{ pr.ordered_images.0.image.url }}" class="d-block w-100 h-300" style="max-height: 500px;" alt="{{ pr.title }}">
-                <div class="carousel-caption d-none d-md-block mx-4 text-start" style="top: 0 !important; left: 0 !important;">
+                <img src="{{ pr.images.all.0.image.url }}" class="d-block w-100 h-300" style="max-height: 500px;" alt="{{ pr.title }}">
+                <div class="carousel-caption d-none d-md-block px-4 text-start custom-background-shadow" style="top: 0 !important; left: 0 !important; inset: 0;">
                     <h5 class="text-start">{{ pr.title }}</h5>
                     <p class="text">{{ pr.details }}</p>
                     <div class="mb-2">
@@ -93,11 +106,6 @@
         {% endfor %}
     </div>
 
-    <h3 class="text-center my-5 fw-semibold text-danger">ABOUT US</h3>
-    <div>
-        <p class="lead text-center">We are a crowdfunding platform that connects innovators with supporters. Our mission is to help people bring their ideas to life through
-            collaboration, transparency, and collective support. Every contribution matters — together, we build a better future</p>
-    </div>
 
     <h3 class="text-center my-5 fw-semibold text-danger">CATEGORIES</h3>
     <div class="row g-4 justify-content-center">
@@ -105,9 +113,16 @@
         <a class="d-block col-md-4 col-lg-3" style="text-decoration: none;" href="{% url 'category-detail' cat.id %}">
             <div class="card text-center p-4 shadow-sm category-card">
                 <h5 class="fw-semibold">{{cat.name}}</h5>
-                <p class="mb-0">1 Projects</p>
+                <p class="mb-0">{{cat.projects_count}} Projects</p>
             </div>
-            {% endfor %}
+        </a>
+        {% endfor %}
+    </div>
+
+    <h3 class="text-center my-5 fw-semibold text-danger">ABOUT US</h3>
+    <div class="row g-4 justify-content-center">
+        <p class="lead text-center">We are a crowdfunding platform that connects innovators with supporters. Our mission is to help people bring their ideas to life through
+            collaboration, transparency, and collective support. Every contribution matters — together, we build a better future</p>
     </div>
 </div>
 
