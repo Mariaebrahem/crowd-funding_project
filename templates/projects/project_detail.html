@@ -68,7 +68,14 @@
           {% if request.user.is_authenticated %}
           <p>Your Rating:</p>
           <div class="text-warning fs-4 mb-3">
-
+            <div class="mb-2">
+              <i class="fa-star text-warning {% if user_rating.rating >= 1 %}fas{% else %}far{% endif %}" style="cursor: pointer;" id="rating-star-1" onclick="updateRating(1)"></i>
+              <i class="fa-star text-warning {% if user_rating.rating >= 2 %}fas{% else %}far{% endif %}" style="cursor: pointer;" id="rating-star-2" onclick="updateRating(2)"></i>
+              <i class="fa-star text-warning {% if user_rating.rating >= 3 %}fas{% else %}far{% endif %}" style="cursor: pointer;" id="rating-star-3" onclick="updateRating(3)"></i>
+              <i class="fa-star text-warning {% if user_rating.rating >= 4 %}fas{% else %}far{% endif %}" style="cursor: pointer;" id="rating-star-4" onclick="updateRating(4)"></i>
+              <i class="fa-star text-warning {% if user_rating.rating >= 5 %}fas{% else %}far{% endif %}" style="cursor: pointer;" id="rating-star-5" onclick="updateRating(5)"></i>
+              <small id="user-rating-value" class="text-muted">{{ user_rating.rating|default:"0.0" }}/5.0</small>
+            </div>
           </div>
           <h5 class="mt-4">Comments:</h5>
 
@@ -137,7 +144,7 @@
           </div>
         </div>
         <p class="mb-1">{{ obj.donations.count }} Donations</p>
-        <p class="mb-1">Rating: <i class="fas fa-star text-warning"></i> {{ obj.total_rating }}</p>
+        <p class="mb-1">Rating: <i class="fas fa-star text-warning"></i> <span id="project-rating">{{ obj.total_rating }}</span></p>
         <p class="mb-3">{{ obj.days_remaining }} Days to go</p>
         {% if request.user.is_authenticated %}
         <button id="donate-btn" class="btn btn-success w-100">Donate to this project</button>
@@ -496,6 +503,33 @@
     });
 
 
+  }
+
+  function updateRating(rating) {
+    $.ajax({
+      url: "{% url 'project-rating-create-update' obj.pk %}",
+      type: "POST",
+      data: {
+        rating: rating,
+        csrfmiddlewaretoken: csrftoken
+      },
+      success: function (response) {
+        if (response.success) {
+          for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+              $(`#rating-star-${i}`).removeClass('far').addClass('fas');
+            } else {
+              $(`#rating-star-${i}`).removeClass('fas').addClass('far');
+            }
+          }
+          $('#user-rating-value').text(`${rating}/5.0`);
+          $('#project-rating').text(response.new_total_rating);
+        }
+      },
+      error: function () {
+        alert("An error occurred while updating your rating. Please try again.");
+      }
+    });
   }
 
 </script>
