@@ -1,0 +1,9 @@
+.search-section {
+    background: linear-gradient(135deg, #dc3545 0%, #f8d7da 100%);
+    padding: 60px 0;
+    color: #fff;
+}
+
+.search-section h3 {
+    color: #fff;
+}

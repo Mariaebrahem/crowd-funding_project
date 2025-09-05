@@ -1,0 +1,29 @@
+.project-card {
+    height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.3s ease-in-out;
+}
+
+.project-card:hover {
+    transform: scale(1.05);
+    z-index: 5;
+}
+
+.fixed-img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.card-text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.project-card .card-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
