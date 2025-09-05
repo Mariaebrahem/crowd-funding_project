@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static%}
+{% block title %}Projects{% endblock title %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static 'css/search.css' %}">
+<link rel="stylesheet" href="{% static 'css/card_style.css' %}">
+{% endblock styles %}
+
+{% block content %}
+<div class="search-section text-center py-5">
+    <form method="GET" action="#" class="d-flex justify-content-center">
+        <div class="input-group w-50">
+            <select class="form-select border-0 rounded-start-pill shadow-sm search-select">
+                <option value="project">Project</option>
+                <option value="category">Category</option>
+                <option value="tag">Tag</option>
+            </select>
+
+            <input type="text" class="form-control border-0 shadow-sm" placeholder="search for a project">
+
+            <button class="btn  rounded-end-pill shadow-sm" type="submit">
+                <img src="{% static 'imgs/magnifiying-glass_93642.png' %}" alt="" width="20px" height="20px">
+                <i class="bi bi-search"></i>
+            </button>
+        </div>
+    </form>
+
+    <h3 class="mt-4 fw-bold">Projects</h3>
+</div>
+<section class="custom-center">
+    <div class="container my-5">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for p in list %}
+                {% include 'partials/_project_card.html' with  project=p %}
+            {% empty %}
+            <p class="text-center">No projects available.</p>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endblock content%}
