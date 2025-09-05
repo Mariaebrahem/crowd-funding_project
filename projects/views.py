@@ -3,22 +3,27 @@ from django.views.generic import TemplateView, ListView, CreateView, DetailView
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.contrib import messages
-from django.http.response import JsonResponse
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Prefetch
-from projects.models import Project, Category, Comment, ProjectImage, Donation
-from projects.filters import ProjectFilter
 from django.utils import timezone
-from django.utils.formats import date_format 
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.views.decorators.csrf import csrf_exempt
+from django.utils.formats import date_format
+from django.http import JsonResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+
+from projects.filters import ProjectFilter
+from projects.models import (
+    Project,
+    Category,
+    Comment,
+    ProjectImage,
+    Donation,
+    ReportComment,
+)
 from projects.forms import (
     ProjectForm,
     CommentForm,
     DonationForm,
     ReportProjectForm,
     ReportCommentForm,
+    ProjectImageFormSet,
 )
 
 
@@ -26,7 +31,7 @@ class HomePageView(TemplateView):
     template_name = "profile/home.html"
 
     def get_homepage_data(self):
-        images_prefetch = Prefetch(
+        images_prefetch = models.Prefetch(
             "images",
             queryset=ProjectImage.objects.order_by("id"),
             to_attr="ordered_images",
@@ -79,7 +84,8 @@ class ProjectDetailView(DetailView):
             "comments",
             queryset=Comment.objects.select_related("parent")
             .prefetch_related("replies")
-            .filter(parent__isnull=True).order_by("-created_at"),
+            .filter(parent__isnull=True)
+            .order_by("-created_at"),
         )
         return (
             Project.objects.all()
@@ -99,10 +105,13 @@ class ProjectDetailView(DetailView):
         return ctx
 
 
-class ProjectCreateView(CreateView):
+class ProjectCreateView(LoginRequiredMixin, CreateView):
     model = Project
     form_class = ProjectForm
     template_name = "projects/project_create.html"
+
+    def get_success_url(self):
+        return reverse("project-detail", kwargs={"pk": self.object.pk})
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -121,25 +130,23 @@ class ProjectCreateView(CreateView):
         self.object.user = self.request.user
         self.object.save()
 
+        print(self.object)
+
         if tags := form.cleaned_data.get("tags"):
             self.object.tags.set(tags)
 
         formset = ProjectImageFormSet(
             self.request.POST, self.request.FILES, instance=self.object
         )
-
+        print(self.request.FILES)
+        print(formset.is_valid())
+        print(formset.errors)
         if formset.is_valid():
+            print(formset.is_valid())
             formset.save()
-
-        return redirect("projects")
-
-
-
-
-
-
-
-
+            return redirect(self.get_success_url())
+        else:
+            return self.render_to_response(self.get_context_data(form=form))
 
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
@@ -159,14 +166,15 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
         obj.project = project
         obj.save()
 
-        formatted_date = date_format(obj.created_at, format='F j, Y \\a\\t g:i A')  
+        formatted_date = obj.created_at.strftime("%b. %d, %Y, %I:%M %p")
+        formatted_date = formatted_date.replace("AM", "a.m.").replace("PM", "p.m.")
 
         data = {
             "pk": obj.pk,
             "comment": obj.comment,
             "parent": obj.parent_id,
             "created_at": formatted_date,
-            "user_name": self.request.user.get_full_name()
+            "user_name": self.request.user.get_full_name(),
         }
 
         return JsonResponse(data)
@@ -174,105 +182,44 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     def form_invalid(self, form):
         return JsonResponse({"success": False, "errors": form.errors}, status=400)
 
-    
 
+class CommentReplyCreateView(LoginRequiredMixin, CreateView):
+    form_class = CommentForm
+    template_name = None
+    login_url = "/users/login/"
+    redirect_field_name = "redirect_to"
 
-
-
-
-
-
-
-
-
-
-
-
-@csrf_exempt
-@require_POST
-@login_required
-def add_reply(request):
-    parent_comment_id = request.POST.get("comment_id")
-    comment_text = request.POST.get("comment")
-
-    try:
-        parent_comment = Comment.objects.get(id=parent_comment_id)
-    except Comment.DoesNotExist:
-        return JsonResponse({"success": False, "error": "Comment not found"})
-
-    reply = Comment.objects.create(
-        user=request.user,
-        project=parent_comment.project,
-        comment=comment_text,
-        parent=parent_comment
-    )
-
-    formatted_date = date_format(reply.created_at, format='F j, Y \\a\\t g:i A')
-
-    data = {
-        "success": True,
-        "comment": reply.comment,
-        "created_at": formatted_date,
-        "user_full_name": request.user.get_full_name()
-    }
-
-    return JsonResponse(data)
-
-
-
-
-
-
-
-
-
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from .models import Comment, ReportComment
-
-
-@csrf_exempt
-@login_required
-def flag_comment(request):
-    if request.method == "POST":
-        comment_id = request.POST.get("comment_id")
-        reason = request.POST.get("reason", "No reason provided")
-
-       
-        try:
-            comment = Comment.objects.get(id=comment_id)
-        except Comment.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Comment not found."})
-
-        
-        ReportComment.objects.create(
-            comment=comment,
-            reporter=request.user,
-            reason=reason
+    def get_parent_comment(self):
+        return get_object_or_404(
+            Comment.objects.filter(project__pk=self.kwargs["pk"]),
+            pk=self.kwargs["comment_pk"],
         )
 
-        return JsonResponse({
-            "success": True,
-            "message": "Comment has been flagged successfully."
-        })
+    def form_valid(self, form):
+        parent = self.get_parent_comment()
 
-    return JsonResponse({"success": False, "error": "Invalid request method."})
+        obj = form.save(commit=False)
+        obj.project_id = self.kwargs["pk"]
+        obj.user = self.request.user
+        obj.parent = parent
+        obj.save()
 
+        formatted_date = obj.created_at.strftime("%b. %d, %Y, %I:%M %p")
+        formatted_date = formatted_date.replace("AM", "a.m.").replace("PM", "p.m.")
 
+        data = {
+            "pk": obj.pk,
+            "comment": obj.comment,
+            "parent": obj.parent_id,
+            "created_at": formatted_date,
+            "user_name": self.request.user.get_full_name(),
+        }
 
+        return JsonResponse(data)
 
+    def form_invalid(self, form):
+        return JsonResponse({"success": False, "errors": form.errors}, status=400)
 
-
-
-    
-
-from django.views.generic.edit import CreateView
-from django.http import JsonResponse
-from django.shortcuts import get_object_or_404
-from .models import Comment
-from .forms import ReportCommentForm
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 class ReportCommentCreateView(LoginRequiredMixin, CreateView):
     form_class = ReportCommentForm
@@ -288,72 +235,44 @@ class ReportCommentCreateView(LoginRequiredMixin, CreateView):
         report.reporter = self.request.user
         report.save()
 
-        return JsonResponse({
-            "success": True,
-            "comment_id": comment.id,
-            "reason": report.reason
-        })
+        return JsonResponse(
+            {"success": True, "comment_id": comment.id, "reason": report.reason}
+        )
 
     def form_invalid(self, form):
-        return JsonResponse({"success": False, "error": "Invalid form data."}, status=400)
-
-
-
-
-
+        return JsonResponse(
+            {"success": False, "error": "Invalid form data."}, status=400
+        )
 
 
 class ReportProjectCreateView(LoginRequiredMixin, CreateView):
     form_class = ReportProjectForm
     template_name = None
-    login_url = "/users/login/"
 
     def form_valid(self, form):
-        project_id = self.request.POST.get("project_id")
-        project = get_object_or_404(Project, pk=project_id)
+        project = get_object_or_404(Project, **{"pk": self.kwargs["pk"]})
 
         report = form.save(commit=False)
         report.project = project
         report.reporter = self.request.user
         report.save()
 
-        return JsonResponse({
-            "success": True,
-            "project_id": project.id,
-            "reason": report.reason
-        })
+        return JsonResponse(
+            {"success": True, "project_id": project.id, "reason": report.reason}
+        )
 
     def form_invalid(self, form):
-        return JsonResponse({"success": False, "error": "Invalid form data."}, status=400)
+        return JsonResponse(
+            {"success": False, "error": "Invalid form data."}, status=400
+        )
 
-    form_class = ReportProjectForm
-    template_name = None  
+
+class RatingCreateView(LoginRequiredMixin, CreateView):
+    pass
 
     def form_valid(self, form):
-        project_id = self.request.POST.get("project_id")
-        reason = self.request.POST.get("reason")
-
-        project = get_object_or_404(Project, pk=project_id)
-
-        report = form.save(commit=False)
-        report.project = project
-        report.reporter_id = self.request.user.id
-        report.save()
-
-        data = {
-            "success": True,
-            "project_id": project.id,
-            "reason": report.reason,
-        }
-
-        return JsonResponse(data)
-
-    def form_invalid(self, form):
-        return JsonResponse({
-            "success": False,
-            "error": "Invalid form data."
-        }, status=400)
-
+        response = super().form_valid(form)
+        return response
 
 
 class DonationCreateView(LoginRequiredMixin, CreateView):
@@ -363,22 +282,49 @@ class DonationCreateView(LoginRequiredMixin, CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.project_id = self.kwargs.get("pk")
-        self.project = get_object_or_404(Project, pk=self.project_id)
+        self.project = get_object_or_404(
+            Project.objects.annotate(donations_count=models.Count("donations")).all(),
+            pk=self.project_id,
+        )
         return super().dispatch(request, *args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs.update({"project": self.project})
+        return kwargs
 
     def form_valid(self, form):
         donation = form.save(commit=False)
         donation.project = self.project
         donation.user = self.request.user
         donation.save()
-        messages.success(
-            self.request, "Donation successful. Thank you for your support!"
+
+        self.project.total_donations += donation.amount
+        self.project.save()
+
+        return JsonResponse(
+            {
+                "success": True,
+                "total_donations": self.project.total_donations,
+                "total_donations_count": self.project.donations_count + 1,
+                "amount": donation.amount,
+            }
         )
-        return redirect("project-detail", pk=self.project_id)
+
+    def form_invalid(self, form):
+        return JsonResponse({"success": False, "error": form.errors}, status=400)
+
+
+class CategoryDetailView(DetailView):
+    model = Category
+    template_name = "projects/category_detail.html"
+    context_object_name = "obj"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["project_id"] = self.project_id
-        context["project"] = self.project
+        context["projects"] = (
+            Project.objects.filter(category=self.object)
+            .prefetch_related("images", "tags")
+            .all()
+        )
         return context
-

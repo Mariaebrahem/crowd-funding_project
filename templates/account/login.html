@@ -10,6 +10,19 @@
                 <div class="card-body p-4">
                     <h2 class="text-center text-danger mb-4 fw-bold">CrowdFunding.</h2>
                     {% include 'partials/_messages.html' with messages=messages %}
+
+                    {% if form.errors %}
+                    <div class="text-danger small">
+                        {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <div class="alert alert-danger my-0 mb-2" role="alert">
+                            {{ error }}
+                        </div>
+                        {% endfor %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
                     <form method="post">
                         {% csrf_token %}
                         {% for field in form %}
