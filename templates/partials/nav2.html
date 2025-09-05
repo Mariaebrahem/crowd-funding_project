@@ -27,7 +27,7 @@
                         {% endif %}
                         {% if not user.is_superuser %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#"><i class="fa fa-user" aria-hidden="true"></i> Profile</a>
+                            <a class="nav-link" href="{% url 'profile' %}"><i class="fa fa-user" aria-hidden="true"></i> Profile</a>
                         </li>
                         {% endif %}
                         
