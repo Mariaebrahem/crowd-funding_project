@@ -30,4 +30,9 @@ urlpatterns = [
         views.DonationCreateView.as_view(),
         name="project-donation-create",
     ),
+    path(
+        "<int:pk>/ratings/",
+        views.ProjectRatingView.as_view(),
+        name="project-rating-create-update",
+    ),
 ]

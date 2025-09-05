@@ -9,6 +9,7 @@ from django.http import JsonResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from projects.filters import ProjectFilter
+from projects.models import Rating
 from projects.models import (
     Project,
     Category,
@@ -100,6 +101,9 @@ class ProjectDetailView(DetailView):
                 self.object.total_donations // self.object.cap if self.object.cap else 0
             ),
             "days_to_go": (self.object.end_time - timezone.now().date()).days,
+            "user_rating": Rating.objects.filter(
+                user=self.request.user, project=self.object
+            ).first(),
         }
         ctx.update(extra_ctx)
         return ctx
@@ -331,3 +335,35 @@ class CategoryDetailView(DetailView):
             .all()
         )
         return context
+
+
+class ProjectRatingView(LoginRequiredMixin, CreateView):
+    model = Project
+    fields = ["total_rating"]
+    template_name = None
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        rating = int(request.POST.get("rating", 0))
+
+        if 1 <= rating <= 5:
+            r, c = Rating.objects.update_or_create(
+                user=self.request.user, project=self.object, defaults={"rating": rating}
+            )
+            self.object.total_rating = Rating.objects.filter(
+                project=self.object
+            ).aggregate(models.Avg("rating"))["rating__avg"]
+            self.object.save()
+
+            return JsonResponse(
+                {
+                    "success": True,
+                    "new_total_rating": self.object.total_rating,
+                    "rating": float(r.rating),
+                }
+            )
+        else:
+            return JsonResponse(
+                {"success": False, "error": "Rating must be between 1 and 5."},
+                status=400,
+            )
