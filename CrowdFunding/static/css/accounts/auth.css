@@ -1,0 +1,45 @@
+/* .card {
+    border-radius: 15px;
+}
+
+.form-control:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+}
+
+.form-control-lg {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.form-control:hover {
+    border-color: #adb5bd;
+}
+
+.btn-danger {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+.btn-outline-dark {
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline-dark:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.text-sm {
+    font-size: 0.875rem;
+} */
+ /* Default state: icon is blue */
+body {
+    background-color: red ;
+}
