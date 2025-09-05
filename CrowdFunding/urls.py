@@ -8,12 +8,14 @@ from django.conf import settings
 from django.conf.urls.static import static
 from projects.views import HomePageView
 
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("oauth/", include("allauth.urls")),
     path("accounts/", include("accounts.urls")),
     path("", HomePageView.as_view(), name="landing"),
     path("projects/", include("projects.urls")),
+
 ]
 
 if settings.DEBUG:

@@ -6,6 +6,9 @@ from django.core.exceptions import ValidationError
 from .models import Account
 from datetime import date, timedelta
 
+
+from django.contrib.auth import get_user_model
+
 class SignupForm(_SignupForm):
     first_name = forms.CharField(max_length=30, required=True)
     last_name = forms.CharField(max_length=30, required=True)
@@ -32,6 +35,53 @@ class UserProfileForm(forms.ModelForm):
             'profile_picture': forms.ClearableFileInput(attrs={'multiple': False}),
         }
 
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = get_user_model()
+        fields = [
+            'first_name', 
+            'last_name', 
+            'email', 
+            'phone_number', 
+            'profile_picture',
+            'birthdate',
+            'facebook_profile',
+            'country'
+        ]
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your first name'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your last name'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your email'
+            }),
+            'phone_number': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your phone number'
+            }),
+            'profile_picture': forms.FileInput(attrs={
+                'class': 'form-control'
+            }),
+            'birthdate': forms.DateInput(attrs={
+                'class': 'form-control',
+                'type': 'date'
+            }),
+            'facebook_profile': forms.URLInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your Facebook profile URL'
+            }),
+            'country': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Enter your country'
+            }),
+        }
+
     def validate_facebook_url(self, value):
         # regex to match Facebook URLs
         facebook_url_regex = r'^https?://(www\.)?facebook\.com/.+'
@@ -56,6 +106,8 @@ class UserProfileForm(forms.ModelForm):
                 raise ValidationError('Invalid Facebook URL')
         return facebook_profile
 
- 
+
+
+
 
   
