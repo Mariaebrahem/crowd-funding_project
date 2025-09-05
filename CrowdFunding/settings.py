@@ -111,7 +111,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, "static")]
 
 STATIC_URL = "/static/"
 
-
+LOGIN_URL = "/oauth/login/"
 SOCIALACCOUNT_PROVIDERS = {
     "google": {
         "APP": {

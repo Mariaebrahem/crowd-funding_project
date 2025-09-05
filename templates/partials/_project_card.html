@@ -1,7 +1,4 @@
 {% load static %}
-
-
-
 <div class="col">
   <div class="card h-100 shadow-sm project-card d-flex flex-column">
     {% if project.images.all %}
@@ -15,11 +12,11 @@
       <p class="card-text">{{ project.details|truncatewords:20 }}</p>
 
       <div class="mb-2">
-        <i class="fa-star text-warning {% if project.total_rating >= 1 %}fa{% else %}fa-regular{% endif %}"></i>          
-        <i class="fa-star text-warning {% if project.total_rating >= 2 %}fa{% else %}fa-regular{% endif %}"></i>          
-        <i class="fa-star text-warning {% if project.total_rating >= 3 %}fa{% else %}fa-regular{% endif %}"></i>          
-        <i class="fa-star text-warning {% if project.total_rating >= 4 %}fa{% else %}fa-regular{% endif %}"></i>          
-        <i class="fa-star text-warning {% if project.total_rating >= 5 %}fa{% else %}fa-regular{% endif %}"></i>       
+        <i class="fa-star text-warning {% if project.total_rating >= 1 %}fas{% else %}far{% endif %}"></i>          
+        <i class="fa-star text-warning {% if project.total_rating >= 2 %}fas{% else %}far{% endif %}"></i>          
+        <i class="fa-star text-warning {% if project.total_rating >= 3 %}fas{% else %}far{% endif %}"></i>          
+        <i class="fa-star text-warning {% if project.total_rating >= 4 %}fas{% else %}far{% endif %}"></i>          
+        <i class="fa-star text-warning {% if project.total_rating >= 5 %}fas{% else %}far{% endif %}"></i>       
         <small class="text-muted">{{ project.total_rating }}/5.0</small>
       </div>
 

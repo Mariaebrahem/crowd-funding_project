@@ -38,14 +38,9 @@ class Project(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="projects", blank=False, null=False
     )
-    # total_donations = models.DecimalField(
-    #     max_digits=10, decimal_places=2, default=Decimal("0.00")
-    # )
-
-    @property
-    def total_donations(self):
-         return sum(d.amount for d in self.donations.all())
-
+    total_donations = models.DecimalField(
+        max_digits=10, decimal_places=2, default=Decimal("0.00")
+    )
     cap = models.DecimalField(max_digits=10, decimal_places=2)
     tags = models.ManyToManyField(Tag, related_name="projects", blank=True)
     start_time = models.DateField(blank=False, null=False)

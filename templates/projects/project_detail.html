@@ -1,5 +1,7 @@
-{% extends 'base.html' %} {% load static %} {% block title %} {{ obj.title }}
-{%endblock title %}
+{% extends 'base.html' %} {% load static %}
+{% block title %}
+{{ obj.title }}
+{% endblock title %}
 
 <h1></h1>
 <p>
@@ -11,47 +13,40 @@
 <ul>
   {% for image in obj.images.all %}
   <li>
-    <img
-      src="{{ image.image.url }}"
-      alt="Project Image"
-      style="max-width: 200px; height: auto"
-    />
+    <img src="{{ image.image.url }}" alt="Project Image" style="max-width: 200px; height: auto" />
   </li>
   {% empty %}
   <li>No images available.</li>
   {% endfor %}
 </ul>
 
-<a href="{% url 'projects' %}">Back to Projects List</a> |
-<a href="{% url 'donate' obj.pk %}">Donate</a> |
+<!-- <a href="{% url 'projects' %}">Back to Projects List</a> |
+<a href="{% url 'project-donation-create' obj.pk %}">Donate</a> |
 <a href="{% url 'project-comment-create' obj.pk %}">Add Comment</a> |
-<a href="{% url 'report_project' obj.pk %}">Report Project</a>
+<a href="{% url 'project-report-create' obj.pk %}">Report Project</a> -->
 
 {% block content %}
 <div class="container my-5">
   <div class="row">
+    <div id="messages" class="col-12"></div>
+  </div>
+  <div class="row">
     <div class="col-md-8">
       <div class="card shadow-lg">
-        <div class="card-body">
-          <h3 class="card-title">{{ obj.title }}</h3>
-          <p class="m-0 fw-semibold text-body-secondary" style="font-size: 16px;">{{obj.category.name}}</p>
+        <div class="card-body d-flex justify-content-between align-items-center">
+          <div>
+            <p class="m-0 fw-semibold text-body-secondary" style="font-size: 16px;">{{obj.category.name}}</p>
+            <h3 class="card-title">{{ obj.title }}</h3>
+          </div>
+          <button class="btn btn-outline-danger flag-project-btn" style="border: none; padding: 0.25rem 1rem;" data-comment-id="{{ comment_obj.id }}"><i
+              class="fas fa-flag"></i></button>
         </div>
-        <div
-          id="projectImageSlider"
-          class="carousel slide"
-          data-bs-ride="carousel"
-        >
+
+        <div id="projectImageSlider" class="carousel slide" data-bs-ride="carousel">
           <div class="carousel-inner">
             {% for image_object in obj.images.all %}
-            <div
-              class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}"
-            >
-              <img
-                src="{{ image_object.image.url }}"
-                class="d-block w-100"
-                height="300"
-                alt="image-{{forloop.counter0 }}"
-              />
+            <div class="carousel-item {% if forloop.counter0 == 0 %}active{% endif %}">
+              <img src="{{ image_object.image.url }}" class="d-block w-100" height="300" alt="image-{{forloop.counter0 }}" />
             </div>
             {% endfor %}
           </div>
@@ -70,370 +65,100 @@
             {% endfor %}
           </div>
 
+          {% if request.user.is_authenticated %}
           <p>Your Rating:</p>
-          <div class="text-warning fs-4 mb-3">★★★★☆</div>
+          <div class="text-warning fs-4 mb-3">
 
-          <!-- Comments -->
-          <h5 class="mt-4">Comments ({{obj.comments.all.count}}):</h5>
+          </div>
+          <h5 class="mt-4">Comments:</h5>
 
-            <div class="mb-3">
-              <textarea id="comment-box" rows="4" cols="50" placeholder="Write your comment here..."></textarea>
-            </div>
-            <button class="btn btn-primary mb-4" id="post-comment-btn">Post Comment</button>
+          <div>
+            <textarea id="comment-box" class="form-control" rows="4" placeholder="Write your comment here..."></textarea>
+          </div>
+          <button class="btn btn-primary mt-3" id="post-comment-btn">Post Comment</button>
+          {% endif %}
 
-<div id="comments">
-    {% for comment_obj in obj.comments.all %}
-        <div class="border rounded p-3 mb-2 bg-light">
-            <strong>{{ comment_obj.user.first_name }} {{ comment_obj.user.last_name }}</strong>
-            <small class="text-muted d-block">{{ comment_obj.created_at }}</small>
-            <p class="m-0">{{ comment_obj.comment }}</p>
+          <div id="comments" class="mt-3">
+            {% for comment_obj in obj.comments.all %}
+            <div class="border rounded p-3 mb-2 bg-light">
+              <strong>{{ comment_obj.user.first_name }} {{ comment_obj.user.last_name }}</strong>
+              <small class="text-muted d-block">{{ comment_obj.created_at }}</small>
+              <p class="mt-2 mb-1">{{ comment_obj.comment }}</p>
 
-            <small class="d-block {% if comment_obj.replies.all %}mb-3{% else %}mb-1{% endif %}">
-                replies: {{ comment_obj.replies.all.count }}
-            </small>
-
-            {% if comment_obj.replies.all %}
-                <div class="mb-1" style="margin-inline-start: 1rem;">
-                    {% for reply in comment_obj.replies.all %}
-                        <div class="border rounded p-3 mb-2 bg-light">
-                            <strong>{{ reply.user.first_name }} {{ reply.user.last_name }}</strong>
-                            <small class="text-muted d-block">{{ reply.created_at }}</small>
-                            <p class="mb-1">{{ reply.comment }}</p>
-                        </div>
-                    {% endfor %}
+              {% if request.user.is_authenticated %}
+              <div class="d-flex gap-2 mt-3 align-items-center justify-content-between">
+                <div>
+                  <button class="btn btn-sm btn-outline-primary reply-btn" style="border: none; padding: 0.25rem 1rem;" data-comment-id="{{ comment_obj.id }}"><i
+                      class="fas fa-reply"></i></button>
                 </div>
-            {% endif %}
+                <button type="button" class="btn btn-outline-danger flag-btn" style="border: none; padding: 0.25rem 1rem;" data-comment-id="{{ comment_obj.id }}"><i
+                    class="fas fa-flag"></i></button>
+              </div>
+              {% endif %}
 
-            <!-- ✅ أزرار التفاعل -->
-            <div class="d-flex gap-2">
-                <!-- 🔘 زرار Reply -->
-                <button class="btn btn-sm btn-primary reply-btn" data-comment-id="{{ comment_obj.id }}">Reply</button>
+              {% if comment_obj.replies.all %}
+              <div class="mt-3 mb-1" style="margin-inline-start: 1rem;">
+                {% for reply in comment_obj.replies.all %}
+                <div class="border rounded p-3 mb-2 bg-light">
+                  <strong>{{ reply.user.first_name }} {{ reply.user.last_name }}</strong>
+                  <small class="text-muted d-block">{{ reply.created_at }}</small>
+                  <p class="mt-2 mb-1">{{ reply.comment }}</p>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
 
-                <!-- 🏴 زرار Flag -->
-                <button class="btn btn-sm btn-danger flag-btn" data-comment-id="{{ comment_obj.id }}">
-    Flag
-</button>
-
-            </div>
-
-            <!-- 📝 فورم الـ Reply -->
-            <div class="reply-form mt-2 d-none" id="reply-form-{{ comment_obj.id }}">
+              <div class="reply-form my-2 d-none" id="reply-form-{{ comment_obj.id }}">
                 <textarea class="form-control mb-2 reply-text" rows="2" placeholder="Write your reply..."></textarea>
                 <button class="btn btn-sm btn-primary save-reply" data-comment-id="{{ comment_obj.id }}">Save</button>
                 <button class="btn btn-sm btn-secondary cancel-reply" data-comment-id="{{ comment_obj.id }}">Cancel</button>
+              </div>
+
             </div>
-        </div>
-    {% empty %}
-        <div class="border rounded p-3 mb-2 bg-light">
-            No comments, Be first to comment on this project !!
-        </div>
-    {% endfor %}
-</div>
-
-
+            {% empty %}
+            <div class="border rounded p-3 mb-2 bg-light">
+              No comments, Be first to comment on this project !!
+            </div>
+            {% endfor %}
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Right side (donation box) -->
     <div class="col-md-4">
-    <div class="card shadow-lg p-4">
-    <h5>
-      <strong>{{ obj.total_donations }} EGP</strong> raised out of <strong>{{ obj.cap }} EGP</strong>
-    </h5>
-    <div class="progress my-3">
-      <div
-        class="progress-bar bg-success"
-        role="progressbar"
-        style="width: {{ obj.progress_percentage|floatformat:2 }}%"
-        aria-valuenow="{{ obj.progress_percentage|floatformat:0 }}"
-        aria-valuemin="0"
-        aria-valuemax="100"
-      >
-        {{ obj.progress_percentage|floatformat:0 }}%
+      <div class="card shadow-lg p-4">
+        <h5>
+          <strong>{{ obj.total_donations }} EGP</strong> raised out of <strong>{{ obj.cap }} EGP</strong>
+        </h5>
+        <div class="progress my-3">
+          <div class="progress-bar bg-success" role="progressbar" style="width: {{ obj.progress_percentage|floatformat:2 }}%"
+            aria-valuenow="{{ obj.progress_percentage|floatformat:0 }}" aria-valuemin="0" aria-valuemax="100">
+            {{ obj.progress_percentage|floatformat:0 }}%
+          </div>
+        </div>
+        <p class="mb-1">{{ obj.donations.count }} Donations</p>
+        <p class="mb-1">Rating: <i class="fas fa-star text-warning"></i> {{ obj.total_rating }}</p>
+        <p class="mb-3">{{ obj.days_remaining }} Days to go</p>
+        {% if request.user.is_authenticated %}
+        <button id="donate-btn" class="btn btn-success w-100">Donate to this project</button>
+        {% endif %}
       </div>
     </div>
-    <p class="mb-1">{{ obj.donations.count }} Donations</p>
-    <p class="mb-1">Rating: ⭐ {{ obj.total_rating }}</p>
-    <p class="mb-3">{{ obj.days_remaining }} Days to go</p>
-    <a href="{% url 'donate' obj.pk %}" class="btn btn-success w-100">Donate</a>
-  </div>
-    </div>
-
-     
-   
   </div>
 </div>
-
-{% endblock content %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{% block scripts %}
-
-
-
-
-
-<script>
-  // ✅ لما المستخدم يضغط "Flag" على تعليق
-  document.querySelectorAll('.flag-btn').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      const commentId = this.dataset.commentId;
-      document.getElementById('flag-comment-id').value = commentId;
-      document.getElementById('flag-reason').value = '';
-      const modal = new bootstrap.Modal(document.getElementById('flagModal'));
-      modal.show();
-    });
-  });
-
-  // ✅ إرسال البلاغ لـ backend
-  document.getElementById('submit-flag').addEventListener('click', function () {
-    const commentId = document.getElementById('flag-comment-id').value;
-    const reason = document.getElementById('flag-reason').value;
-
-    fetch('/comments/flag/', {
-      method: 'POST',
-      headers: {
-        'X-CSRFToken': getCookie('csrftoken'),
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: new URLSearchParams({
-        comment_id: commentId,
-        reason: reason
-      })
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Comment has been reported successfully.');
-        bootstrap.Modal.getInstance(document.getElementById('flagModal')).hide();
-      } else {
-        alert('Error: ' + data.error);
-      }
-    });
-  });
-
-  // ✅ دالة للحصول على CSRF من الكوكيز
-  function getCookie(name) {
-    let cookieValue = null;
-    if (document.cookie && document.cookie !== '') {
-      const cookies = document.cookie.split(';');
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-          break;
-        }
-      }
-    }
-    return cookieValue;
-  }
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-$(document).ready(function () {
-    $('.reply-btn').click(function () {
-        var commentId = $(this).data('comment-id');
-        $('#reply-form-' + commentId).removeClass('d-none');
-        $(this).hide();
-    });
-
-    $('.cancel-reply').click(function () {
-        var commentId = $(this).data('comment-id');
-        $('#reply-form-' + commentId).addClass('d-none');
-        $('#reply-form-' + commentId + ' .reply-text').val('');
-        $('.reply-btn[data-comment-id="' + commentId + '"]').show();
-    });
-
-    $('.save-reply').click(function () {
-        var commentId = $(this).data('comment-id');
-        var replyText = $('#reply-form-' + commentId + ' .reply-text').val();
-
-        if (replyText.trim() === "") {
-            alert("Please write something!");
-            return;
-        }
-
-        $.ajax({
-            url: "{% url 'add_reply' %}", 
-            method: "POST",
-            data: {
-                comment_id: commentId,
-                comment: replyText,
-                csrfmiddlewaretoken: '{{ csrf_token }}'
-            },
-            success: function (data) {
-                if (data.success.pk) {
-                    var replyHtml = `
-                        <div class="border rounded p-3 mb-2 bg-light">
-                            <strong>${data.user_full_name}</strong>
-                            <small class="text-muted d-block">${data.created_at}</small>
-                            <p class="mb-1">${data.comment}</p>
-                        </div>
-                    `;
-
-                    
-                    let replyContainer = $('#reply-form-' + commentId).siblings('div').filter(function () {
-                        return $(this).css('margin-inline-start') === '1rem';
-                    });
-
-                    if (replyContainer.length === 0) {
-                        $('#reply-form-' + commentId).before(`
-                            <div class="mb-1" style="margin-inline-start: 1rem;">
-                                ${replyHtml}
-                            </div>
-                        `);
-                    } else {
-                        replyContainer.append(replyHtml);
-                    }
-
-                    $('#reply-form-' + commentId + ' .reply-text').val('');
-                    $('#reply-form-' + commentId).addClass('d-none');
-                    $('.reply-btn[data-comment-id="' + commentId + '"]').show();
-                } else {
-                    alert("Something went wrong.");
-                }
-            },
-            error: function () {
-                alert("Error while sending reply.");
-            }
-        });
-    });
-});
-</script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<script>
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            const cookies = document.cookie.split(';');
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    const csrftoken = getCookie('csrftoken');
-
-    $(document).ready(function () {
-        $('#post-comment-btn').click(function () {
-            let commentText = $('#comment-box').val().trim();
-
-            if (commentText === "") {
-                return;
-            }
-
-            $.ajax({
-                url: "/projects/{{obj.id}}/comments/create/",
-                type: "POST",
-                data: {
-                    comment: commentText,
-                    csrfmiddlewaretoken: csrftoken
-                },
-                success: function (response) {
-                    if (response.pk) {
-                        $('#comments').prepend(`
-                        <div class="border rounded p-3 mb-2 bg-light">
-                            <strong>${response.user_name}</strong>
-                            <small class="text-muted d-block">${response.created_at}</small>
-                            <p class="m-0">${response.comment}</p>
-                            <small class="d-block mb-1">replies: 0</small>
-                        </div>
-                        `);
-                        $('#comment-box').val("");
-                    } else {
-                        alert("Failed to post comment.");
-                    }
-                },
-                error: function () {
-                    alert("An error occurred. Please try again.");
-                }
-            });
-        });
-    });
-</script>
-
-
-
-<!-- Modal for Flagging a Comment -->
+{% if request.user.is_authenticated %}
 <div class="modal fade" id="flagModal" tabindex="-1" aria-labelledby="flagModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="flagModalLabel">Report Comment</h5>
+        <h5 class="modal-title" id="flagModalLabel">Report a comment</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form id="flagForm">
           <input type="hidden" id="flag-comment-id" name="comment_id" />
           <div class="mb-3">
-            <label for="flag-reason" class="form-label">Reason for reporting:</label>
-            <textarea id="flag-reason" name="reason" class="form-control" rows="3" required></textarea>
+            <textarea id="flag-reason" name="reason" class="form-control" placeholder="Write why you are reporting this comment..." rows="5" cols="10" required></textarea>
           </div>
         </form>
       </div>
@@ -445,4 +170,333 @@ $(document).ready(function () {
   </div>
 </div>
 
+<div class="modal fade" id="flagProjectModal" tabindex="-1" aria-labelledby="flagProjectModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="flagProjectModalLabel">Report this project</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="flagForm">
+          <div class="mb-3">
+            <textarea id="flag-project-reason" name="reason" class="form-control" placeholder="Write why you are reporting this project..." rows="5" cols="10" required></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="submit-flag-project" class="btn btn-danger">Submit Report</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="donationModalLabel">Donate</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="donation-messages" class="mb-3">
+
+        </div>
+        <form id="donationForm">
+          <div class="mb-3">
+            <label for="donation-amount" class="form-label">Please enter the amount you want to donate:</label>
+            <input id="donation-amount" type="number" class="form-control" required />
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="submit-donation" class="btn btn-success">Submit donation</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+{% endblock content %}
+
+
+{% block scripts %}
+<script>
+  const projectID = "{{ obj.id }}";
+
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  const csrftoken = getCookie('csrftoken');
+
+  $(document).ready(function () {
+    $('#post-comment-btn').click(function () {
+      let commentText = $('#comment-box').val().trim();
+
+      if (commentText === "") {
+        return;
+      }
+
+      $.ajax({
+        url: "{% url 'project-comment-create' obj.pk %}",
+        type: "POST",
+        data: {
+          comment: commentText,
+          csrfmiddlewaretoken: csrftoken
+        },
+        success: function (response) {
+          let messagesContiner = $('#messages').empty();
+
+          if (response.pk) {
+            $('#comments').prepend(`
+              <div class="border rounded p-3 mb-2 bg-light">
+                  <strong>${response.user_name}</strong>
+                  <small class="text-muted d-block">${response.created_at}</small>
+                  <p class="m-0">${response.comment}</p>
+
+                  <div class="d-flex gap-2 mt-3 align-items-center justify-content-between">
+                    <div>
+                      <button class="btn btn-sm btn-outline-primary reply-btn" style="border: none; padding: 0.25rem 1rem;" data-comment-id="${response.pk}"><i
+                          class="fas fa-reply" onclick=""></i></button>
+                    </div>
+                    <button type="button" class="btn btn-outline-danger flag-btn" style="border: none; padding: 0.25rem 1rem;" data-comment-id="${response.pk}"><i
+                        class="fas fa-flag"></i></button>
+                  </div>
+
+                  <div class="reply-form my-2 d-none" id="reply-form-${response.pk}">
+                    <textarea class="form-control mb-2 reply-text" rows="2" placeholder="Write your reply..."></textarea>
+                    <button class="btn btn-sm btn-primary save-reply" data-comment-id="${response.pk}">Save</button>
+                    <button class="btn btn-sm btn-secondary cancel-reply" data-comment-id="${response.pk}">Cancel</button>
+                  </div>
+              </div>
+            `);
+            messagesContiner.append(`
+                <div class="alert alert-success my-0 py-1 mb-2" role="success">
+                    Your comment has been posted successfully!
+                </div>
+            `)
+            $('#comment-box').val("");
+            initButtonHandlers();
+          }
+        },
+        error: function () {
+          alert("An error occurred. Please try again.");
+        }
+      });
+    });
+
+    $('#donate-btn').click(function () {
+      const donationModal = new bootstrap.Modal(document.getElementById('donationModal'));
+      donationModal.show();
+    });
+
+    $('#submit-donation').click(function () {
+      const amount = $('#donation-amount').val().trim();
+
+      if (amount === "" || isNaN(amount) || Number(amount) <= 0) {
+        return;
+      }
+
+      $.ajax({
+        url: "{% url 'project-donation-create' obj.pk %}",
+        type: "POST",
+        data: {
+          amount: amount,
+          csrfmiddlewaretoken: csrftoken
+        },
+        success: function (response) {
+          let messagesContiner = $('#messages').empty();
+
+          if (response.success) {
+            messagesContiner.append(`
+                <div class="alert alert-success my-0 py-1 mb-2" role="success">
+                    Thank you for your donation of ${response.amount} EGP!
+                </div>
+            `)
+            const donationModal = bootstrap.Modal.getInstance(document.getElementById('donationModal'));
+            donationModal.hide();
+          } else {
+            alert("An error occurred while processing your donation. Please try again.");
+          }
+        },
+        error: function (error) {
+          let errors = error.responseJSON.error
+          let messagesContiner = $('#donation-messages').empty();
+
+          if (errors) {
+            console.log(errors)
+            if (errors.__all__) {
+              for (let err of errors.__all__) {
+                messagesContiner.append(`
+                <div class="alert alert-danger my-0 py-1 mb-2" role="alert">
+                    ${err}
+                </div>
+                `)
+              }
+            }
+            if (errors.amount) {
+              for (let err of errors.amount) {
+                messagesContiner.append(`
+                <div class="alert alert-danger my-0 py-1 mb-2" role="alert">
+                    ${err}
+                </div>
+                `)
+              }
+            }
+          }
+        }
+      });
+    });
+
+    initButtonHandlers();
+  });
+
+  function initButtonHandlers() {
+    $('.reply-btn').click(function () {
+      var commentId = $(this).data('comment-id');
+      $('#reply-form-' + commentId).removeClass('d-none');
+      $(this).hide();
+    });
+
+    $('.cancel-reply').click(function () {
+      var commentId = $(this).data('comment-id');
+      $('#reply-form-' + commentId).addClass('d-none');
+      $('#reply-form-' + commentId + ' .reply-text').val('');
+      $('.reply-btn[data-comment-id="' + commentId + '"]').show();
+    });
+
+    $('.save-reply').click(function () {
+      const commentId = $(this).data('comment-id');
+      const replyText = $('#reply-form-' + commentId + ' .reply-text').val();
+
+      if (replyText.trim() === "") return;
+
+      $.ajax({
+        url: `/projects/${projectID}/comments/${commentId}/replies/create/`,
+        method: "POST",
+        data: {
+          comment_id: commentId,
+          comment: replyText,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (data) {
+          if (data.pk) {
+            var replyHtml = `
+                        <div class="border rounded p-3 mb-2 bg-light">
+                            <strong>${data.user_name}</strong>
+                            <small class="text-muted d-block">${data.created_at}</small>
+                            <p class="mt-2 mb-1">${data.comment}</p>
+                        </div>
+                    `;
+
+
+            let replyContainer = $('#reply-form-' + commentId).siblings('div').filter(function () {
+              return $(this).css('margin-inline-start') === '1rem';
+            });
+
+            if (replyContainer.length === 0) {
+              $('#reply-form-' + commentId).before(`
+                            <div class="mb-1" style="margin-inline-start: 1rem;">
+                                ${replyHtml}
+                            </div>
+                        `);
+            } else {
+              replyContainer.append(replyHtml);
+            }
+
+            $('#reply-form-' + commentId + ' .reply-text').val('');
+            $('#reply-form-' + commentId).addClass('d-none');
+            $('.reply-btn[data-comment-id="' + commentId + '"]').show();
+          } else {
+            alert("Something went wrong.");
+          }
+        },
+        error: function () {
+          alert("Error while sending reply.");
+        }
+      });
+    });
+
+    $('.flag-btn').click(function (btn) {
+      const commentId = this.dataset.commentId;
+      document.getElementById('flag-comment-id').value = commentId;
+      document.getElementById('flag-reason').value = '';
+      const modal = new bootstrap.Modal(document.getElementById('flagModal'));
+      modal.show();
+    });
+
+    $('#submit-flag').click(function () {
+      const commentId = document.getElementById('flag-comment-id').value;
+      const reason = document.getElementById('flag-reason').value;
+
+      $.ajax({
+        url: `/projects/${projectID}/comments/${commentId}/reports/create/`,
+        method: "POST",
+        data: {
+          comment_id: commentId,
+          reason: reason,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (data) {
+          bootstrap.Modal.getInstance(document.getElementById('flagModal')).hide();
+        },
+        error: function () {
+          alert("Error while sending reply.");
+        }
+      });
+    });
+
+    $('.flag-project-btn').click(function (btn) {
+      const commentId = this.dataset.commentId;
+      document.getElementById('flag-project-reason').value = '';
+      const modal = new bootstrap.Modal(document.getElementById('flagProjectModal'));
+      modal.show();
+    });
+
+    $('#submit-flag-project').click(function () {
+      const reason = document.getElementById('flag-project-reason').value;
+
+      $.ajax({
+        url: '{% url "project-report-create" obj.pk %}',
+        method: "POST",
+        data: {
+          reason: reason,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (data) {
+          let messagesContiner = $('#messages').empty();
+
+          messagesContiner.append(`
+              <div class="alert alert-success my-0 py-1 mb-2" role="success">
+                  Your report has been submitted successfully!
+              </div>
+          `)
+
+          bootstrap.Modal.getInstance(document.getElementById('flagProjectModal')).hide();
+        },
+        error: function () {
+          alert("Error while sending reply.");
+        }
+      });
+    });
+
+
+  }
+
+</script>
 {% endblock scripts %}

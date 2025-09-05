@@ -6,7 +6,7 @@ from projects.views import HomePageView
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
-from projects.views import HomePageView
+from projects.views import HomePageView, CategoryDetailView
 
 
 urlpatterns = [
@@ -15,7 +15,7 @@ urlpatterns = [
     path("accounts/", include("accounts.urls")),
     path("", HomePageView.as_view(), name="landing"),
     path("projects/", include("projects.urls")),
-
+    path("categories/<int:pk>/", CategoryDetailView.as_view(), name="category-detail"),
 ]
 
 if settings.DEBUG:
